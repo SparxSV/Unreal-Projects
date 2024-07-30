@@ -5,6 +5,9 @@
 #include "Intro_CPP/Components/HealthComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "InputMappingContext.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -24,7 +27,17 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// Add input mapping context
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		// Get local player subsystem
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			// Add input context
+			Subsystem->AddMappingContext(InputMapping, 0);
+		}
+	}
 }
 
 // Called every frame
@@ -39,36 +52,32 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacter::StartAttack);
-
-	PlayerInputComponent->BindAxis("MoveVertical", this, &APlayerCharacter::MoveVertical);
-	PlayerInputComponent->BindAxis("MoveHorizontal", this, &APlayerCharacter::MoveHorizontal);
-
-	PlayerInputComponent->BindAxis("LookHorizontal", this, &APlayerCharacter::LookHorizontal);
-	PlayerInputComponent->BindAxis("LookVertical", this, &APlayerCharacter::LookVertical);
+	if(UEnhancedInputComponent* Input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
+		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+	}
 }
 
-void APlayerCharacter::MoveVertical(float InputValue)
+void APlayerCharacter::Move(const FInputActionValue& Value)
 {
-	FVector ForwardDirection = GetActorForwardVector();
-	AddMovementInput(ForwardDirection, InputValue);
+	FVector2D MoveAxisValue = Value.Get<FVector2D>();
+	if(GetController())
+	{
+		AddMovementInput(GetActorRightVector(), MoveAxisValue.X);
+		AddMovementInput(GetActorForwardVector(), MoveAxisValue.Y);
+	}
 }
 
-void APlayerCharacter::MoveHorizontal(float InputValue)
+void APlayerCharacter::Look(const FInputActionValue& Value)
 {
-	FVector RightDirection = GetActorRightVector();
-	AddMovementInput(RightDirection, InputValue);
-}
-
-void APlayerCharacter::LookHorizontal(float InputValue)
-{
-	AddControllerYawInput(InputValue);
-}
-
-void APlayerCharacter::LookVertical(float InputValue)
-{
-	AddControllerPitchInput(-InputValue);
+	FVector2D LookAxisValue = Value.Get<FVector2D>();
+	if(GetController())
+	{
+		AddControllerYawInput(LookAxisValue.X);
+		AddControllerPitchInput(LookAxisValue.Y);
+	}
 }
 
 void APlayerCharacter::StartAttack()

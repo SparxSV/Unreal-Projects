@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "InputActionValue.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS()
@@ -29,6 +30,26 @@ public:
 	void LineTrace();
 
 protected:
+
+#pragma region Enhanced Inputs
+
+	UPROPERTY(EditAnywhere, Category = "Enhanced Inputs")
+	class UInputMappingContext* InputMapping;
+
+	UPROPERTY(EditAnywhere, Category = "Enhanced Inputs")
+	class UInputAction* MoveAction;
+
+	UPROPERTY(EditAnywhere, Category = "Enhanced Inputs")
+	class UInputAction* LookAction;
+
+	UPROPERTY(EditAnywhere, Category = "Enhanced Inputs")
+	class UInputAction* JumpAction;
+
+#pragma endregion
+
+	UPROPERTY(EditAnywhere, Category="Stats")
+	int Damage;
+
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* Camera;
 
@@ -38,18 +59,12 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UAnimSequence* AttackAnimation;
 
-	UPROPERTY(EditAnywhere)
-	int Damage;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void MoveVertical(float InputValue);
-	void MoveHorizontal(float InputValue);
-
-	void LookHorizontal(float InputValue);
-	void LookVertical(float InputValue);
+	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
 
 	void StartAttack();	
 
