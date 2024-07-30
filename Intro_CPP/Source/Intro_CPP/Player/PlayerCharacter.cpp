@@ -2,6 +2,7 @@
 
 
 #include "Intro_CPP/Player/PlayerCharacter.h"
+#include "Intro_CPP/Components/HealthComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 
@@ -95,12 +96,15 @@ void APlayerCharacter::LineTrace()
 	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, TraceParams);
 
 	// Debug Lines
-	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1, 0, 1);
+	//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1, 0, 1);
 
 	if(HitResult.bBlockingHit)
 	{
 		AActor* ActorHit = HitResult.GetActor();
-		ActorHit->Destroy();
+		UHealthComponent* OtherHit = ActorHit->FindComponentByClass<UHealthComponent>();
+
+		if(IsValid(OtherHit))
+			OtherHit->TakeDamage(Damage);
 	}
 }
 

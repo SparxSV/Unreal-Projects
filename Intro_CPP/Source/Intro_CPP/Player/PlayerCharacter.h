@@ -38,6 +38,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UAnimSequence* AttackAnimation;
 
+	UPROPERTY(EditAnywhere)
 	int Damage;
 
 protected:

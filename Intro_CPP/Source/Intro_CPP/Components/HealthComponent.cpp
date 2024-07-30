@@ -6,11 +6,7 @@
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	bCanTakeDamage = true;
 }
 
 
@@ -23,12 +19,30 @@ void UHealthComponent::BeginPlay()
 	
 }
 
-
-// Called every frame
-void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UHealthComponent::Die()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	GetOwner()->Destroy();
+}
 
-	// ...
+void UHealthComponent::AllowTakeDamage()
+{
+	bCanTakeDamage = true;
+}
+
+void UHealthComponent::TakeDamage(int Damage)
+{
+	if(bCanTakeDamage)
+	{
+		// Handle Health Values
+		Health -= Damage;
+		bCanTakeDamage = false;
+
+		// Delay
+		FTimerHandle ITimerDelay;
+		GetWorld()->GetTimerManager().SetTimer(ITimerDelay, this, &UHealthComponent::AllowTakeDamage, 0.5f, false);
+
+		// Die Function
+		if(Health <= 0) Die();
+	}
 }
 
