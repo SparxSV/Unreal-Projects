@@ -73,18 +73,34 @@ void APlayerCharacter::LookVertical(float InputValue)
 void APlayerCharacter::StartAttack()
 {
 	// Call attack animation
-	if(AttackAnimation != nullptr)
+	if(AttackAnimation != nullptr && !bIsAttacking)
+	{
 		GetMesh()->PlayAnimation(AttackAnimation, false);
+		bIsAttacking = true;
+	}
 }
 
 void APlayerCharacter::LineTrace()
 {
-	// Deal damage to enemies
-
 	// Get socket locations
+	FVector StartLocation = SwordMesh->GetSocketLocation(FName("Start"));
+	FVector EndLocation = SwordMesh->GetSocketLocation(FName("End"));
 
 	// Setup line trace
+	FHitResult HitResult;
+	FCollisionQueryParams TraceParams;
+	TraceParams.AddIgnoredActor(this);
 
 	// Line trace
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, TraceParams);
+
+	// Debug Lines
+	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1, 0, 1);
+
+	if(HitResult.bBlockingHit)
+	{
+		AActor* ActorHit = HitResult.GetActor();
+		ActorHit->Destroy();
+	}
 }
 

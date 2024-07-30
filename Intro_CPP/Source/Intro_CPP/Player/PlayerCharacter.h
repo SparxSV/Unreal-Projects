@@ -11,19 +11,21 @@ class INTRO_CPP_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
-	bool bIsAttacking;
-
-public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
-	
+
+public:
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsAttacking;
+
+public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
 	void LineTrace();
 
 protected:
