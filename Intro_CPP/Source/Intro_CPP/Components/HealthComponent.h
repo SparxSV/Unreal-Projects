@@ -21,9 +21,14 @@ public:
 public:	
 	void TakeDamage(int Damage);
 
+	int GetHealth();
+
 protected:
-	UPROPERTY(EditAnywhere)
-	int Health;
+	UPROPERTY(EditAnywhere, Category = "Health")
+	int MaxHealth;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Health")
+	int CurrentHealth;
 
 	bool bCanTakeDamage;
 

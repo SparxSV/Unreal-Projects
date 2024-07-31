@@ -37,6 +37,9 @@ protected:
 	class UInputMappingContext* InputMapping;
 
 	UPROPERTY(EditAnywhere, Category = "Enhanced Inputs")
+	class UInputAction* AttackAction;
+
+	UPROPERTY(EditAnywhere, Category = "Enhanced Inputs")
 	class UInputAction* MoveAction;
 
 	UPROPERTY(EditAnywhere, Category = "Enhanced Inputs")

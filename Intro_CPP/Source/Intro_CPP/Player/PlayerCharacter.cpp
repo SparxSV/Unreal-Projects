@@ -57,6 +57,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+		Input->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APlayerCharacter::StartAttack);
 	}
 }
 
@@ -105,7 +106,7 @@ void APlayerCharacter::LineTrace()
 	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, TraceParams);
 
 	// Debug Lines
-	//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1, 0, 1);
+	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1, 0, 1);
 
 	if(HitResult.bBlockingHit)
 	{
@@ -113,7 +114,9 @@ void APlayerCharacter::LineTrace()
 		UHealthComponent* OtherHit = ActorHit->FindComponentByClass<UHealthComponent>();
 
 		if(IsValid(OtherHit))
+		{
 			OtherHit->TakeDamage(Damage);
+		}
 	}
 }
 

@@ -7,6 +7,8 @@
 UHealthComponent::UHealthComponent()
 {
 	bCanTakeDamage = true;
+
+	CurrentHealth = MaxHealth;
 }
 
 
@@ -33,8 +35,8 @@ void UHealthComponent::TakeDamage(int Damage)
 {
 	if(bCanTakeDamage)
 	{
-		// Handle Health Values
-		Health -= Damage;
+		// Handle MaxHealth Values
+		CurrentHealth -= Damage;
 		bCanTakeDamage = false;
 
 		// Delay
@@ -42,7 +44,12 @@ void UHealthComponent::TakeDamage(int Damage)
 		GetWorld()->GetTimerManager().SetTimer(ITimerDelay, this, &UHealthComponent::AllowTakeDamage, 0.5f, false);
 
 		// Die Function
-		if(Health <= 0) Die();
+		if(CurrentHealth <= 0) Die();
 	}
+}
+
+int UHealthComponent::GetHealth()
+{
+	return CurrentHealth;
 }
 
